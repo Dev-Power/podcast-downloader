@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  podcast-downloader:
+    image: devpowercouk/podcast-downloader
+    restart: always
+    environment:
+      AppSettings__CheckIntervalInDays: 5
+      AppSettings__PodcastInfoList__0__PodcastName: "{podcast name}"
+      AppSettings__PodcastInfoList__0__RssUrl: "{rss feed}"
+      AppSettings__PodcastInfoList__0__LocalDirectory: "/Downloads/{podcast name}"
+      AppSettings__PodcastInfoList__1__PodcastName: "{podcast name}"
+      AppSettings__PodcastInfoList__1__RssUrl: "{rss feed}"
+      AppSettings__PodcastInfoList__1__LocalDirectory: "/Downloads/{podcast name}"
+    volumes:
+      - { path to download root folder on host }:/Downloads
