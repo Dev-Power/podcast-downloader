@@ -3,10 +3,24 @@ using System.Net;
 
 namespace PodcastDownloader.WorkerService;
 
-public class DownloadService
+public interface IDownloadService
 {
+    void Run(PodcastInfo podcastInfo);
+}
+
+public class DownloadService : IDownloadService
+{
+    private readonly ILogger<DownloadService> _logger;
+    
+    public DownloadService(ILogger<DownloadService> logger)
+    {
+        _logger = logger;
+    }
+    
     public void Run(PodcastInfo podcastInfo)
     {
+        _logger.LogInformation(Util.FormatLogMessage($"Running for podcast {podcastInfo.PodcastName}"));
+        
         if (podcastInfo.RssUrl.Length == 0) { throw new InvalidOperationException("Nothing to download"); }
         
         string feedUrl = podcastInfo.RssUrl;
@@ -15,7 +29,7 @@ public class DownloadService
         
         using (var client = new WebClient())
         {
-            Console.WriteLine($"Downloading {feedUrl} to {feedLocalFileNnme}");
+            _logger.LogInformation(Util.FormatLogMessage($"Downloading {feedUrl} to {feedLocalFileNnme}"));
             client.DownloadFile(feedUrl, feedLocalFileNnme);
         }
 
@@ -37,14 +51,14 @@ public class DownloadService
             {
                 using (var client = new WebClient())
                 {
-                    Console.WriteLine($"Downloading {urlToDownload} to {localFileName}");
+                    _logger.LogInformation(Util.FormatLogMessage($"Downloading {urlToDownload} to {localFileName}"));
                     client.DownloadFile(urlToDownload, localFileName);
                     Thread.Sleep(2000);
                 }
             }
             else
             {
-                Console.WriteLine($"Skipping. File at {localFileName} already exists.");
+                // Console.WriteLine($"Skipping. File at {localFileName} already exists.");
             }
     
             string GetDate(DateTime pubDate)
